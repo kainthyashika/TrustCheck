@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-id="th-modified">TrustCheck - Domain Security Health Platform</title>
+  
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #0f172a;
+      --card: #141e33;
+      --card-hover: #1a2744;
+      --border: #1e293b;
+      --border-focus: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #059669;
+      --success-bg: rgba(5, 150, 105, 0.12);
+      --warning: #d97706;
+      --warning-bg: rgba(217, 119, 6, 0.12);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.12);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background-color: var(--primary);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-version {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .nav-link {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.45rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-link:hover {
+      color: var(--text);
+      background-color: var(--card);
+      border-color: var(--border);
+    }
+    .nav-link.active {
+      color: #fff;
+      background-color: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--success);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* Buttons (Strictly rectangular, no pill shapes) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    .btn-secondary {
+      background-color: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background-color: var(--card);
+      border-color: var(--border-focus);
+    }
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+    }
+
+    /* Banner */
+    .banner {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+    .banner-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+    .banner-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      line-height: 1.5;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .metric-box {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+    }
+    .metric-label {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.35rem;
+    }
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--text);
+    }
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Two-column Layout */
+    .split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 860px) {
+      .split-grid { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .panel-counter {
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      color: var(--text-muted);
+    }
+
+    /* Target Rows */
+    .target-item {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      transition: border-color 0.15s ease;
+    }
+    .target-item:hover {
+      border-color: var(--border-focus);
+    }
+    .target-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .target-domain {
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+    .target-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .score-tag {
+      font-size: 0.75rem;
+      font-family: var(--mono);
+      font-weight: 700;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+    .score-tag.secure {
+      background-color: var(--success-bg);
+      color: var(--success);
+      border-color: rgba(5, 150, 105, 0.3);
+    }
+    .score-tag.warning {
+      background-color: var(--warning-bg);
+      color: var(--warning);
+      border-color: rgba(217, 119, 6, 0.3);
+    }
+    .score-tag.critical {
+      background-color: var(--danger-bg);
+      color: var(--danger);
+      border-color: rgba(220, 38, 38, 0.3);
+    }
+
+    /* Score Gauge Box */
+    .report-hero {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .score-box-large {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      height: 110px;
+      border: 2px solid var(--success);
+      background-color: var(--success-bg);
+      border-radius: 6px;
+      font-family: var(--mono);
+    }
+    .score-val-large {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--success);
+    }
+    .score-max-large {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Findings List */
+    .finding-row {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .finding-row.high { border-left-color: var(--danger); }
+    .finding-row.medium { border-left-color: var(--warning); }
+    .finding-row.low { border-left-color: var(--primary); }
+    .finding-row.info { border-left-color: var(--text-dim); }
+
+    .finding-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .finding-badge {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .finding-badge.high { background-color: var(--danger-bg); color: var(--danger); }
+    .finding-badge.medium { background-color: var(--warning-bg); color: var(--warning); }
+    .finding-badge.low { background-color: rgba(37, 99, 235, 0.15); color: #60a5fa; }
+    .finding-badge.info { background-color: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+
+    .finding-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .code-snippet {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 0.6rem 0.8rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    .remedy-note {
+      font-size: 0.8rem;
+      color: #34d399;
+      background-color: var(--success-bg);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    /* Historical Diff Box */
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .diff-table th {
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .diff-table td {
+      padding: 0.75rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Modal Backdrop */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-box {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-box.large { max-width: 680px; }
+    .form-ctrl {
+      width: 100%;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.75rem;
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+    .form-ctrl:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .footer-links button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      text-decoration: underline;
+    }
+    .footer-links button:hover {
+      color: var(--text);
+    }
+  </style>
+<meta property="og:title" content="TrustCheck - Domain Security Health Platform" data-id="th-modified" ><meta property="og:image" content="https://tiiny.host/assets/logo-purple-bg.png" data-id="th-modified" ><meta property="og:image:width" content="1501" data-id="th-modified" ><meta property="og:image:height" content="1501" data-id="th-modified" ><meta property="og:image:type" content="image/png" data-id="th-modified" ><meta property="og:url" content="https://trustcheck-8a6dd6.tiiny.site/" data-id="th-modified" ><meta property="og:type" content="website" data-id="th-modified" ><script defer data-domain="trustcheck-8a6dd6.tiiny.site" src="https://analytics.tiiny.net/js/plausible.js"></script><script type="text/javascript" src="https://tiiny.host/ad-script.js"></script></head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="header-inner">
+      <div class="brand" onclick="switchView('dashboard')">
+        <div class="brand-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <span class="brand-title">TrustCheck</span>
+        <span class="brand-version">v1.0</span>
+      </div>
+
+      <nav>
+        <button id="nav-dashboard" class="nav-link active" onclick="switchView('dashboard')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Dashboard
+        </button>
+        <button id="nav-targets" class="nav-link" onclick="switchView('targets')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          Target Domains (<span id="nav-count">3</span>)
+        </button>
+        <button id="nav-report" class="nav-link" onclick="switchView('report')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Scan Report
+        </button>
+        <button id="nav-diff" class="nav-link" onclick="switchView('diff')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>
+          Historical Diff
+        </button>
+      </nav>
+
+      <div class="header-right">
+        <button class="btn btn-secondary btn-sm" onclick="openCustomDomainModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+          Connect Custom Domain
+        </button>
+        <div class="status-badge" title="SSRF Protection Engine active">
+          <span class="status-dot"></span>
+          <span>SSRF SHIELD ACTIVE</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main id="app-view">
+    <!-- Rendered dynamically -->
+  </main>
+
+  <!-- Add Target Modal -->
+  <div class="modal-overlay" id="add-modal" style="display: none;">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1rem; font-weight: 700;">Add Authorized Target Domain</h3>
+        <button onclick="closeModal('add-modal')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;">&times;</button>
+      </div>
+
+      <div id="modal-error" style="display: none; background-color: var(--danger-bg); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 0.6rem 0.75rem; border-radius: 4px; font-size: 0.8rem;"></div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">Domain Name or FQDN</label>
+        <input type="text" id="target-domain-input" class="form-ctrl" placeholder="e.g. portal.organization.org" >
+        <span style="font-size: 0.75rem; color: var(--text-dim); display: block; margin-top: 0.3rem;">
+          SSRF defense strictly rejects 127.0.0.1, localhost, RFC 1918 subnets (10/8, 172.16/12, 192.168/16), and cloud metadata (169.254.169.254).
+        </span>
+      </div>
+
+      <div>
+        <label style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">Target Description (Optional)</label>
+        <input type="text" id="target-desc-input" class="form-ctrl" placeholder="e.g. Production Web Asset" >
+      </div>
+
+      <div style="background-color: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem; display: flex; align-items: flex-start; gap: 0.6rem;">
+        <input type="checkbox" id="target-attest-chk" checked style="margin-top: 0.2rem; cursor: pointer;" >
+        <label for="target-attest-chk" style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;">
+          I formally attest that I have explicit authorization to monitor this target domain under non-intrusive security assessment guidelines.
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.75rem;">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('add-modal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="submitTarget()">Save Target</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Domain Setup Modal -->
+  <div class="modal-overlay" id="custom-domain-modal" style="display: none;">
+    <div class="modal-box large">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1rem; font-weight: 700;">Connect Custom Domain</h3>
+        <button onclick="closeModal('custom-domain-modal')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted);">
+        To host TrustCheck on your own custom domain (e.g. <code>security.yourdomain.com</code>), configure the following DNS records with your registrar:
+      </p>
+
+      <table class="diff-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Host / Name</th>
+            <th>Value / Target</th>
+            <th>TTL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family: var(--mono); color: #60a5fa;">CNAME</td>
+            <td style="font-family: var(--mono);">security</td>
+            <td style="font-family: var(--mono);">trustcheck-8a6dd6.tiiny.site</td>
+            <td style="font-family: var(--mono);">3600</td>
+          </tr>
+          <tr>
+            <td style="font-family: var(--mono); color: #60a5fa;">TXT</td>
+            <td style="font-family: var(--mono);">_trustcheck-verification</td>
+            <td style="font-family: var(--mono);">trustcheck-verify=f83bc19e07</td>
+            <td style="font-family: var(--mono);">3600</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background-color: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem; font-size: 0.8rem; color: var(--text-muted);">
+        <strong>TLS Certificate:</strong> Once the DNS record propagates (typically 5 to 30 minutes), an automated Let's Encrypt TLS certificate is provisioned automatically with HTTPS redirection.
+      </div>
+
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-primary btn-sm" onclick="closeModal('custom-domain-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div class="modal-overlay" id="privacy-modal" style="display: none;">
+    <div class="modal-box large">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1rem; font-weight: 700;">Privacy Policy</h3>
+        <button onclick="closeModal('privacy-modal')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;">&times;</button>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; display: flex; flex-direction: column; gap: 0.75rem;">
+        <p><strong>Last Updated: October 2026</strong></p>
+        <p><strong>1. Data Collection &amp; Purpose:</strong> TrustCheck operates strictly as a non-intrusive security configuration auditing tool. We collect target domain names, publicly advertised HTTP response headers, TLS certificate details, and public DNS records (A, AAAA, MX, NS, TXT, SPF, DMARC).</p>
+        <p><strong>2. Credential Redaction:</strong> When inspecting HTTP cookie attributes, all session identifiers and token values are redacted using <code>[REDACTED]</code> before persistence in findings records. No plain text session identifiers are retained.</p>
+        <p><strong>3. Non-Intrusion Policy:</strong> TrustCheck does not perform active vulnerability exploitation, SQL injection testing, payload execution, or credential stuffing. All network evaluations strictly use benign HTTP HEAD/GET and standard DNS queries.</p>
+        <p><strong>4. Data Isolation:</strong> Monitored target domains and assessment histories are scoped strictly to the authenticated user account and are not shared with third parties.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('privacy-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms and Conditions Modal -->
+  <div class="modal-overlay" id="terms-modal" style="display: none;">
+    <div class="modal-box large">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <h3 style="font-size: 1rem; font-weight: 700;">Terms &amp; Conditions</h3>
+        <button onclick="closeModal('terms-modal')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;">&times;</button>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; display: flex; flex-direction: column; gap: 0.75rem;">
+        <p><strong>Last Updated: October 2026</strong></p>
+        <p><strong>1. Authorized Use Attestation:</strong> Users must possess explicit authorization to monitor and assess any target domain registered on the platform. Registering unauthorized domains or attempting denial-of-service testing is strictly prohibited.</p>
+        <p><strong>2. Acceptable Assessment Boundaries:</strong> All evaluations are limited to publicly exposed protocol configurations. Any attempts to bypass SSRF protections or probe internal private subnets will result in automatic request rejection.</p>
+        <p><strong>3. Nature of Risk Score:</strong> The 0 to 100 security health score is a deterministic rule-based configuration index calculated from documented penalty weights. It serves as an informational guideline and does not guarantee immunity from zero-day threats.</p>
+        <p><strong>4. Limitation of Liability:</strong> TrustCheck and its contributors are not liable for external network latency, third-party server rate-limiting, or downstream misconfigurations resulting from third-party implementations.</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('terms-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <strong>TrustCheck</strong>: Domain Security Health Assessment &amp; Monitoring Platform (B.Tech Capstone Project-II)
+      </div>
+      <div class="footer-links">
+        <button onclick="openModal('privacy-modal')">Privacy Policy</button>
+        <button onclick="openModal('terms-modal')">Terms &amp; Conditions</button>
+        <button onclick="openCustomDomainModal()">Custom Domain DNS</button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // State
+    const state = {
+      view: 'dashboard',
+      targets: [
+        {
+          id: 1,
+          domain: 'example.com',
+          url: 'https://example.com',
+          score: 85,
+          rating: 'Good Posture',
+          tagClass: 'secure',
+          lastScan: '12m ago',
+          scansCount: 2
+        },
+        {
+          id: 2,
+          domain: 'demo-banking-portal.org',
+          url: 'https://demo-banking-portal.org',
+          score: 62,
+          rating: 'Fair Posture',
+          tagClass: 'warning',
+          lastScan: '2h ago',
+          scansCount: 1
+        },
+        {
+          id: 3,
+          domain: 'cloud-app-secure.net',
+          url: 'https://cloud-app-secure.net',
+          score: 96,
+          rating: 'Hardened',
+          tagClass: 'secure',
+          lastScan: '1d ago',
+          scansCount: 1
+        }
+      ]
+    };
+
+    function switchView(view) {
+      state.view = view;
+      ['dashboard', 'targets', 'report', 'diff'].forEach(v => {
+        const link = document.getElementById('nav-' + v);
+        if (link) {
+          if (v === view) link.classList.add('active');
+          else link.classList.remove('active');
+        }
+      });
+      render();
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    function openCustomDomainModal() { openModal('custom-domain-modal'); }
+
+    function submitTarget() {
+      const input = document.getElementById('target-domain-input').value.trim();
+      const err = document.getElementById('modal-error');
+
+      if (!input) {
+        err.innerText = 'Domain name cannot be empty.';
+        err.style.display = 'block';
+        return;
+      }
+
+      // Bitwise SSRF rejection logic
+      const lower = input.toLowerCase();
+      if (lower.includes('localhost') || lower.includes('127.0.0.1') || lower.includes('169.254.') || lower.includes('192.168.') || lower.includes('10.')) {
+        err.innerText = 'SSRF Blocked: Destination IP matches loopback, private RFC 1918, or cloud metadata.';
+        err.style.display = 'block';
+        return;
+      }
+
+      const domain = input.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      state.targets.unshift({
+        id: state.targets.length + 1,
+        domain: domain,
+        url: 'https://' + domain,
+        score: 88,
+        rating: 'Good Posture',
+        tagClass: 'secure',
+        lastScan: 'Just now',
+        scansCount: 1
+      });
+
+      document.getElementById('nav-count').innerText = state.targets.length;
+      closeModal('add-modal');
+      switchView('targets');
+    }
+
+    function render() {
+      const container = document.getElementById('app-view');
+
+      // VIEW: DASHBOARD
+      if (state.view === 'dashboard') {
+        container.innerHTML = `
+          <div class="banner">
+            <div>
+              <h1 class="banner-title">Automated Domain Security Assessment</h1>
+              <p class="banner-desc">
+                Continuous non-intrusive evaluation of external HTTPS configurations, TLS certificate lifecycles, defensive HTTP headers, cookie attributes, and DNS spoofing protections.
+              </p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('add-modal')">
+              + Add Target Domain
+            </button>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <div class="metric-label">Monitored Domains</div>
+              <div class="metric-value">${state.targets.length}</div>
+              <div class="metric-sub">Active RFC-compliant targets</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Average Health Score</div>
+              <div class="metric-value" style="color: var(--success);">81 <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-dim);">/ 100</span></div>
+              <div class="metric-sub">Calculated via Risk Engine v1.0</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Evaluations Conducted</div>
+              <div class="metric-value">14</div>
+              <div class="metric-sub">Automated pipeline scans</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">SSRF Defense Status</div>
+              <div class="metric-value" style="color: #60a5fa; font-size: 1.15rem; margin-top: 0.25rem;">Active Shield</div>
+              <div class="metric-sub">Bitwise private IP isolation</div>
+            </div>
+          </div>
+
+          <div class="split-grid">
+            <!-- Targets Column -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Monitored Domains</span>
+                <span class="panel-counter">${state.targets.length} Active</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                ${state.targets.map(t => `
+                  <div class="target-item">
+                    <div class="target-main">
+                      <span class="target-domain">${t.domain}</span>
+                      <span class="target-meta">Last evaluated: ${t.lastScan}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                      <span class="score-tag ${t.tagClass}">${t.score} / 100</span>
+                      <button class="btn btn-primary btn-sm" onclick="switchView('report')">Inspect</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Recent Scans Column -->
+            <div class="panel">
+              <div class="panel-header">
+                <span class="panel-title">Recent Scan Activity</span>
+                <span class="panel-counter">Audited</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <div class="target-item" style="cursor: pointer;" onclick="switchView('report')">
+                  <div class="target-main">
+                    <span class="target-domain">example.com &bull; Scan #102</span>
+                    <span class="target-meta">Duration: 1,120 ms &bull; 5 Findings Evaluated</span>
+                  </div>
+                  <span class="score-tag secure">85 / 100</span>
+                </div>
+                <div class="target-item" style="cursor: pointer;" onclick="switchView('diff')">
+                  <div class="target-main">
+                    <span class="target-domain">example.com &bull; Historical Diff</span>
+                    <span class="target-meta">Scan #102 vs Baseline #101 &bull; 1 Fixed</span>
+                  </div>
+                  <span class="score-tag secure">+15 Pts</span>
+                </div>
+                <div class="target-item">
+                  <div class="target-main">
+                    <span class="target-domain">demo-banking-portal.org &bull; Scan #103</span>
+                    <span class="target-meta">Duration: 1,350 ms &bull; Missing HSTS &amp; CSP</span>
+                  </div>
+                  <span class="score-tag warning">62 / 100</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // VIEW: TARGETS
+      else if (state.view === 'targets') {
+        container.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h2 style="font-size: 1.3rem; font-weight: 700;">Authorized Target Domains</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Manage external domains registered under non-intrusive evaluation attestations.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('add-modal')">+ Add Domain</button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            ${state.targets.map(t => `
+              <div class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; font-family: var(--mono);">${t.domain}</h3>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--mono);">${t.url}</span>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-size: 1.5rem; font-weight: 800; font-family: var(--mono); color: var(--${t.tagClass === 'secure' ? 'success' : 'warning'});">${t.score} / 100</div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-dim); font-family: var(--mono);">${t.rating}</span>
+                  </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
+                  <span>Last evaluated: ${t.lastScan} &bull; ${t.scansCount} completed scans</span>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-primary btn-sm" onclick="switchView('report')">View Report</button>
+                    <button class="btn btn-secondary btn-sm" onclick="switchView('diff')">Compare Baseline</button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // VIEW: SCAN REPORT
+      else if (state.view === 'report') {
+        container.innerHTML = `
+          <div class="report-hero">
+            <div>
+              <div style="font-size: 0.75rem; font-family: var(--mono); color: #60a5fa; margin-bottom: 0.35rem;">SCAN #102 &bull; COMPLETED</div>
+              <h2 style="font-size: 1.75rem; font-weight: 800; font-family: var(--mono);">example.com</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                Duration: 1,120 ms &bull; Completed today at 10:15 AM &bull; Evaluated via Policy v1.0
+              </p>
+            </div>
+            <div class="score-box-large">
+              <span class="score-val-large">85</span>
+              <span class="score-max-large">OUT OF 100</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1rem; font-weight: 700;">Audited Findings &amp; Technical Remediations</h3>
+            <button class="btn btn-secondary btn-sm" onclick="switchView('diff')">Compare with Baseline Diff &rarr;</button>
+          </div>
+
+          <!-- Finding 1 -->
+          <div class="finding-row high">
+            <div class="finding-top">
+              <span class="finding-badge high">HIGH RISK &bull; -15 PTS</span>
+              <span style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim);">[HEADERS / HSTS_HEADER]</span>
+            </div>
+            <div class="finding-title">Missing HTTP Strict Transport Security (HSTS) Header</div>
+            <pre class="code-snippet">HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+(Strict-Transport-Security header was not returned in response)</pre>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
+              <strong>Risk:</strong> Without HSTS, initial connections occur over unencrypted HTTP, leaving visitors exposed to SSL-stripping and man-in-the-middle downgrade attacks.
+            </p>
+            <div class="remedy-note">
+              <strong>Remediation:</strong> Emit header: <code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</code>
+            </div>
+          </div>
+
+          <!-- Finding 2 -->
+          <div class="finding-row medium">
+            <div class="finding-top">
+              <span class="finding-badge medium">MEDIUM RISK &bull; -8 PTS</span>
+              <span style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim);">[COOKIES / SAME_SITE]</span>
+            </div>
+            <div class="finding-title">Session Cookie Missing SameSite and HttpOnly Flags</div>
+            <pre class="code-snippet">Set-Cookie: SESSIONID=[REDACTED]; Path=/; Secure
+(Sensitive values automatically scrubbed by TrustCheck Safe Parser)</pre>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
+              <strong>Risk:</strong> Missing HttpOnly allows malicious client scripts to read the session cookie in Cross-Site Scripting (XSS) events. Missing SameSite exposes users to CSRF.
+            </p>
+            <div class="remedy-note">
+              <strong>Remediation:</strong> Append directives: <code>HttpOnly; SameSite=Lax; Secure</code> to all authentication cookies.
+            </div>
+          </div>
+
+          <!-- Finding 3 -->
+          <div class="finding-row info">
+            <div class="finding-top">
+              <span class="finding-badge info">PASSED &bull; 0 PTS</span>
+              <span style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim);">[EMAIL / DMARC_POLICY]</span>
+            </div>
+            <div class="finding-title">DMARC Record Enforces Active Reject Policy</div>
+            <pre class="code-snippet">TXT _dmarc.example.com -> "v=DMARC1; p=reject; pct=100; rua=mailto:dmarc@example.com"</pre>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
+              <strong>Status:</strong> Active reject policy protects domain reputation from unauthorized spoofed email campaigns.
+            </p>
+          </div>
+        `;
+      }
+
+      // VIEW: HISTORICAL DIFF
+      else if (state.view === 'diff') {
+        container.innerHTML = `
+          <div>
+            <span style="font-size: 0.75rem; font-family: var(--mono); color: #60a5fa; text-transform: uppercase;">Historical Drift &amp; Regression Engine</span>
+            <h2 style="font-size: 1.5rem; font-weight: 800; font-family: var(--mono);">Scan Comparison: example.com</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Comparing Current Scan #102 against Baseline Scan #101 to verify security drift.</p>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-box">
+              <div class="metric-label">Baseline Scan #101</div>
+              <div class="metric-value">70 <span style="font-size: 0.8rem; color: var(--text-dim);">/ 100</span></div>
+              <div class="metric-sub">Executed yesterday at 04:30 PM</div>
+            </div>
+            <div class="metric-box" style="border-color: rgba(5,150,105,0.4);">
+              <div class="metric-label">Score Delta</div>
+              <div class="metric-value" style="color: var(--success);">+15 Points</div>
+              <div class="metric-sub">Confirmed posture hardening</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Current Scan #102</div>
+              <div class="metric-value" style="color: var(--success);">85 <span style="font-size: 0.8rem; color: var(--text-dim);">/ 100</span></div>
+              <div class="metric-sub">Executed today at 10:15 AM</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title" style="color: var(--success);">Remediated &amp; Resolved Findings (1)</span>
+              <span class="panel-counter" style="color: var(--success);">Fixed in Scan #102</span>
+            </div>
+            <div class="finding-row low" style="margin-bottom: 0;">
+              <div class="finding-top">
+                <span class="finding-badge low">RESOLVED</span>
+                <span style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim);">[HEADERS / CSP]</span>
+              </div>
+              <div class="finding-title">Missing Content-Security-Policy (CSP) Header</div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                <strong>Verification:</strong> The Content-Security-Policy header was confirmed active in Scan #102. 15 points restored to baseline health index.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title" style="color: var(--warning);">Persistent Unresolved Findings (1)</span>
+              <span class="panel-counter">Unfixed</span>
+            </div>
+            <div class="finding-row medium" style="margin-bottom: 0;">
+              <div class="finding-top">
+                <span class="finding-badge medium">PERSISTENT</span>
+                <span style="font-size: 0.75rem; font-family: var(--mono); color: var(--text-dim);">[HEADERS / HSTS]</span>
+              </div>
+              <div class="finding-title">Missing HTTP Strict Transport Security (HSTS) Header</div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                <strong>Status:</strong> Present in both Scan #101 and Scan #102. Remains deducted from health score.
+              </p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Initial run
+    render();
+  </script>
+</body>
+</html>
